@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import GradeNumeros from './components/GradeNumeros'
 import ModalCompra from './components/ModalCompra'
 import SecaoDoacao from './components/SecaoDoacao'
+import SecaoPremio from './components/SecaoPremio'
 import Admin from './pages/Admin'
 import { CONFIG } from './config'
 import { supabase } from './lib/supabaseClient'
@@ -42,7 +43,6 @@ function PaginaRifa() {
     carregarNumeros()
   }, [carregarNumeros])
 
-  // Atualiza em tempo real quando outras pessoas reservam números
   useEffect(() => {
     if (!usandoSupabase) return
     const channel = supabase
@@ -51,15 +51,11 @@ function PaginaRifa() {
         carregarNumeros()
       })
       .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
+    return () => { supabase.removeChannel(channel) }
   }, [usandoSupabase, carregarNumeros])
 
   async function confirmarReserva({ numero, nome, telefone }) {
     if (!usandoSupabase) {
-      // modo demo local, sem persistência real
       setNumeros((prev) =>
         prev.map((n) => (n.numero === numero ? { ...n, status: 'reservado' } : n))
       )
@@ -76,7 +72,7 @@ function PaginaRifa() {
         reservado_em: new Date().toISOString(),
       })
       .eq('numero', numero)
-      .eq('status', 'livre') // só reserva se ainda estiver livre (evita corrida entre dois compradores)
+      .eq('status', 'livre')
 
     if (error) {
       return { ok: false, mensagem: 'Não foi possível reservar. Tente novamente.' }
@@ -92,7 +88,10 @@ function PaginaRifa() {
   if (carregando) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-cream">
-        <p className="font-body text-charcoal-soft">Carregando rifa...</p>
+        <div className="text-center">
+          <div className="text-4xl mb-3" aria-hidden="true">🌸</div>
+          <p className="font-body text-charcoal-soft">Carregando a rifa da Maria Idália...</p>
+        </div>
       </div>
     )
   }
@@ -102,29 +101,40 @@ function PaginaRifa() {
       <Hero vendidos={vendidos} total={CONFIG.rifa.totalNumeros} />
 
       {!usandoSupabase && (
-        <div className="max-w-3xl mx-auto px-6 -mt-2 mb-8">
+        <div className="max-w-3xl mx-auto px-6 pt-6 pb-0">
           <div className="bg-terracotta/10 border border-terracotta/30 rounded-xl px-4 py-3 text-center">
             <p className="font-body text-xs text-charcoal-soft">
-              ⚠️ Modo demonstração: o Supabase ainda não foi configurado, então as reservas não são salvas de verdade.
-              Veja <strong>CONFIGURACAO.md</strong> para ativar o banco de dados.
+              ⚠️ Modo demonstração — Supabase ainda não configurado. Veja <strong>CONFIGURACAO.md</strong>.
             </p>
           </div>
         </div>
       )}
 
-      <main className="max-w-3xl mx-auto px-6 py-12">
-        <h2 className="font-display text-3xl text-charcoal text-center mb-2">Escolha seu número</h2>
-        <p className="font-body text-charcoal-soft text-center mb-8">
-          R$ {CONFIG.rifa.precoPorNumero},00 por número · Pix instantâneo
-        </p>
+      {/* Prêmio */}
+      <div className="pt-10">
+        <SecaoPremio />
+      </div>
+
+      {/* Grade de números */}
+      <main className="max-w-3xl mx-auto px-6 pt-10 pb-12">
+        <div className="text-center mb-8">
+          <h2 className="font-display text-4xl text-charcoal mb-1">Escolha seu número</h2>
+          <p className="font-body text-charcoal-soft text-sm">
+            R$ {CONFIG.rifa.precoPorNumero},00 por número · pagamento via Pix na hora
+          </p>
+        </div>
         <GradeNumeros numeros={numeros} selecionado={selecionado} onSelecionar={setSelecionado} />
       </main>
 
+      {/* Doação */}
       <SecaoDoacao />
 
-      <footer className="text-center py-10 px-6">
+      {/* Rodapé */}
+      <footer className="text-center py-10 px-6 border-t border-blush/40">
+        <div className="text-2xl mb-2" aria-hidden="true">🌸</div>
+        <p className="font-display italic text-lg text-charcoal/60 mb-1">Maria Idália</p>
         <p className="font-body text-xs text-charcoal-soft">
-          Feito com carinho para a chegada da nossa menina · {CONFIG.rifa.dataPrevista}
+          Chegando em {CONFIG.rifa.dataPrevista} · Feito com amor pela família
         </p>
       </footer>
 
