@@ -2,7 +2,6 @@ import { CONFIG } from '../config'
 
 export default function Hero({ vendidos, total }) {
   const progresso = total > 0 ? Math.round((vendidos / total) * 100) : 0
-  const arrecadado = vendidos * CONFIG.rifa.precoPorNumero
 
   return (
     <header className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #f9e8ec 0%, #fdf0e8 60%, #f3e8f0 100%)' }}>
@@ -21,7 +20,7 @@ export default function Hero({ vendidos, total }) {
           <IlustracaoBebe />
         </div>
 
-        {/* Vem aí */}
+        {/* Data */}
         <div className="text-center mb-2">
           <span className="inline-block font-body text-xs tracking-[0.25em] uppercase text-charcoal/50">
             ✦ {CONFIG.rifa.dataPrevista} ✦
@@ -36,7 +35,7 @@ export default function Hero({ vendidos, total }) {
           está chegando
         </p>
 
-        {/* Subtítulo */}
+        {/* Descrição */}
         <p className="font-body text-center text-charcoal-soft leading-relaxed max-w-md mx-auto mb-2 text-sm sm:text-base">
           {CONFIG.rifa.descricao}
         </p>
@@ -47,7 +46,7 @@ export default function Hero({ vendidos, total }) {
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/80 shadow-sm px-6 py-5 grid grid-cols-3 divide-x divide-charcoal/10">
           <Stat label="Valor do número" valor={`R$ ${CONFIG.rifa.precoPorNumero}`} />
           <Stat label="Números vendidos" valor={`${vendidos} / ${total}`} />
-          <Stat label="Arrecadado" valor={`R$ ${arrecadado}`} destaque />
+          <StatMensagem restantes={total - vendidos} />
         </div>
       </div>
 
@@ -71,27 +70,42 @@ export default function Hero({ vendidos, total }) {
       </div>
 
       {/* Divisor ondulado */}
-      <svg className="block w-full" style={{ height: '48px', display: 'block' }} viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true">
+      <svg className="block w-full" style={{ height: '48px' }} viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,24 C200,48 400,0 600,24 C800,48 1000,0 1200,24 L1200,48 L0,48 Z" fill="#FBF5EE" />
       </svg>
     </header>
   )
 }
 
-function Stat({ label, valor, destaque }) {
+function Stat({ label, valor }) {
   return (
     <div className="text-center px-2">
-      <p className={`font-display text-xl sm:text-2xl ${destaque ? 'text-terracotta' : 'text-charcoal'}`}>
-        {valor}
-      </p>
+      <p className="font-display text-xl sm:text-2xl text-charcoal">{valor}</p>
       <p className="font-body text-[10px] sm:text-xs text-charcoal-soft mt-0.5 leading-snug">{label}</p>
+    </div>
+  )
+}
+
+function StatMensagem({ restantes }) {
+  const mensagens = [
+    { limite: 0,   texto: '🎉 Todos vendidos!', sub: 'Sorteio em breve' },
+    { limite: 20,  texto: '🔥 Quase esgotado!', sub: 'Corre, poucos restam' },
+    { limite: 60,  texto: '⚡ Vendendo rápido!', sub: 'Garanta o seu' },
+    { limite: 120, texto: '💕 Junte-se a nós!', sub: 'Escolha seu número' },
+    { limite: 200, texto: '🌸 Seja parte disso!', sub: 'Ajude a Maria Idália' },
+  ]
+  const m = mensagens.find(m => restantes <= m.limite) || mensagens[mensagens.length - 1]
+
+  return (
+    <div className="text-center px-2">
+      <p className="font-display text-lg sm:text-xl text-terracotta leading-tight">{m.texto}</p>
+      <p className="font-body text-[10px] sm:text-xs text-charcoal-soft mt-0.5 leading-snug">{m.sub}</p>
     </div>
   )
 }
 
 function BotaoCompartilhar() {
   const mensagem = `🌸 Chá Rifa da Maria Idália 🌸\n\nNossa filha está chegando em setembro e estamos organizando um chá rifa para ajudar nos preparativos! Cada número custa R$ ${CONFIG.rifa.precoPorNumero},00 e o pagamento é via Pix na hora.\n\n🎁 Prêmio: ${CONFIG.premio.descricao}\n\nEscolhe seu número aqui 👉 ${typeof window !== 'undefined' ? window.location.href : ''}`
-
   const link = `https://wa.me/?text=${encodeURIComponent(mensagem)}`
 
   return (
@@ -113,52 +127,35 @@ function BotaoCompartilhar() {
 function IlustracaoBebe() {
   return (
     <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustração de bebê" role="img">
-      {/* Fundo circular suave */}
       <circle cx="80" cy="80" r="75" fill="#F9E8EC" />
       <circle cx="80" cy="80" r="65" fill="#FAEEF5" stroke="#E8B4BC" strokeWidth="1.5" strokeDasharray="4 3" />
-
-      {/* Ursinho sentado */}
-      {/* corpo */}
       <ellipse cx="80" cy="102" rx="28" ry="26" fill="#D9B99B" />
-      {/* cabeça */}
       <circle cx="80" cy="72" r="24" fill="#D9B99B" />
-      {/* orelhas */}
       <circle cx="58" cy="52" r="9" fill="#D9B99B" />
       <circle cx="58" cy="52" r="5.5" fill="#C49A7A" />
       <circle cx="102" cy="52" r="9" fill="#D9B99B" />
       <circle cx="102" cy="52" r="5.5" fill="#C49A7A" />
-      {/* focinho */}
       <ellipse cx="80" cy="78" rx="10" ry="7" fill="#C49A7A" />
-      {/* nariz */}
       <ellipse cx="80" cy="73" rx="3.5" ry="2.5" fill="#8B5E3C" />
-      {/* boca sorridente */}
       <path d="M74 80 Q80 86 86 80" stroke="#8B5E3C" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      {/* olhos */}
       <circle cx="71" cy="68" r="4" fill="white" />
       <circle cx="89" cy="68" r="4" fill="white" />
       <circle cx="72" cy="68" r="2.2" fill="#3A3530" />
       <circle cx="90" cy="68" r="2.2" fill="#3A3530" />
-      {/* brilho nos olhos */}
       <circle cx="73.2" cy="66.8" r="0.9" fill="white" />
       <circle cx="91.2" cy="66.8" r="0.9" fill="white" />
-      {/* braços */}
       <ellipse cx="52" cy="100" rx="10" ry="14" fill="#D9B99B" transform="rotate(-15 52 100)" />
       <ellipse cx="108" cy="100" rx="10" ry="14" fill="#D9B99B" transform="rotate(15 108 100)" />
-      {/* patinhas */}
       <ellipse cx="65" cy="126" rx="10" ry="7" fill="#C49A7A" />
       <ellipse cx="95" cy="126" rx="10" ry="7" fill="#C49A7A" />
-      {/* dedos pés */}
       <circle cx="59" cy="122" r="2.5" fill="#B8896A" />
       <circle cx="65" cy="120" r="2.5" fill="#B8896A" />
       <circle cx="71" cy="122" r="2.5" fill="#B8896A" />
       <circle cx="89" cy="122" r="2.5" fill="#B8896A" />
       <circle cx="95" cy="120" r="2.5" fill="#B8896A" />
       <circle cx="101" cy="122" r="2.5" fill="#B8896A" />
-      {/* laço rosa no topo */}
       <path d="M68 50 Q74 44 80 50 Q86 44 92 50 Q86 56 80 50 Q74 56 68 50Z" fill="#E8B4BC" />
       <circle cx="80" cy="50" r="3.5" fill="#C97C5D" />
-
-      {/* Estrelinhas decorativas */}
       <text x="20" y="38" fontSize="12" fill="#E8B4BC" opacity="0.9">✦</text>
       <text x="130" y="45" fontSize="10" fill="#9CAF88" opacity="0.8">✦</text>
       <text x="26" y="128" fontSize="8" fill="#C97C5D" opacity="0.6">✦</text>
