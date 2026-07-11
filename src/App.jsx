@@ -16,31 +16,53 @@ function gerarNumerosLocais() {
   }))
 }
 
-function SetaPulsante() {
+function SetaFixa() {
   const [visivel, setVisivel] = useState(true)
 
   useEffect(() => {
     function onScroll() {
-      if (window.scrollY > 80) setVisivel(false)
-      else setVisivel(true)
+      setVisivel(window.scrollY < 80)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  if (!visivel) return null
-
   return (
-    <div className="flex justify-center py-2" aria-hidden="true">
-      <div style={{ animation: 'bounce 1.5s infinite' }}>
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M16 6 L16 26 M8 18 L16 26 L24 18" stroke="#C97C5D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        bottom: '28px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 40,
+        pointerEvents: 'none',
+        opacity: visivel ? 1 : 0,
+        transition: 'opacity 0.4s ease',
+      }}
+    >
+      <div style={{ animation: 'setaBounce 1.4s ease-in-out infinite' }}>
+        <div style={{
+          background: 'rgba(251, 245, 238, 0.85)',
+          backdropFilter: 'blur(6px)',
+          border: '1.5px solid #E8B4BC',
+          borderRadius: '50%',
+          width: '44px',
+          height: '44px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 16px rgba(201,124,93,0.18)',
+        }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 4 L10 16 M4 11 L10 16 L16 11" stroke="#C97C5D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
       <style>{`
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); opacity: 1; }
-          50% { transform: translateY(8px); opacity: 0.6; }
+        @keyframes setaBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(7px); }
         }
       `}</style>
     </div>
@@ -140,9 +162,6 @@ function PaginaRifa() {
         <SecaoPremio />
       </div>
 
-      {/* Seta pulsante */}
-      <SetaPulsante />
-
       {/* Doação — entre prêmio e grade */}
       <div className="max-w-3xl mx-auto px-6 pb-2">
         <SecaoDoacao />
@@ -167,6 +186,9 @@ function PaginaRifa() {
           Chegando em {CONFIG.rifa.dataPrevista} · Feito com amor pela família
         </p>
       </footer>
+
+      {/* Seta fixa na parte inferior da tela */}
+      <SetaFixa />
 
       {selecionado !== null && (
         <ModalCompra
