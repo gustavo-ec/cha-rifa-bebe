@@ -35,7 +35,7 @@ export default function SecaoPremio() {
 
         <ul className="space-y-4">
           <Regra icone="📅" titulo="Data do sorteio">
-            O sorteio será realizado no dia <strong>10 de agosto de 2026</strong>. Caso todos os
+            O sorteio será realizado no dia <strong>10 de setembro de 2026</strong>. Caso todos os
             200 números sejam vendidos antes dessa data, o sorteio acontecerá no{' '}
             <strong>dia seguinte</strong> ao da venda do último número.
           </Regra>
